@@ -82,7 +82,7 @@ export const Login = async (req, res) => {
     );
 
     return res
-      .cookie("Token", token, {
+      .cookie("token", token, {
         httpOnly: true,
         sameSite: "none",
         secure: true,
@@ -98,6 +98,28 @@ export const Login = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Login failed! Please try again",
+    });
+  }
+};
+
+export const Logout = async (req, res) => {
+  try {
+    return res
+      .cookie("token", "", {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        maxAge: 0,
+      })
+      .json({
+        success: true,
+        message: "Logout successful",
+      });
+  } catch (error) {
+    console.log(`Logout error: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      message: "Logout failed! Please try again.",
     });
   }
 };
