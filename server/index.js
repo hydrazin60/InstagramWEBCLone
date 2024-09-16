@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import UserAuthRouter from "./routes/userAuth.routes.js";
 
 dotenv.config();
 
@@ -17,6 +18,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 app.use(cors(CorsOptions));
+
+app.use("/instaclone/api/v1/user" , UserAuthRouter);
 
 app.listen(PORT, (err) => {
   if (!err) {
