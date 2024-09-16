@@ -18,10 +18,6 @@ app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 app.use(cors(CorsOptions));
 
-app.get("/", (req, res) => {
-  res.send("server is running || Server basic configuration");
-});
-
 app.listen(PORT, (err) => {
   if (!err) {
     console.log(`Server is running on port ${PORT}`);
