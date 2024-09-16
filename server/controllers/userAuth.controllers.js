@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const Register = async (req, res) => {
   try {
@@ -39,6 +40,64 @@ export const Register = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Registeration failed! Please try again",
+    });
+  }
+};
+
+export const Login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(401).json({
+        success: false,
+        message: "Please enter all the fields",
+      });
+    }
+    const isUserRegistered = await User.findOne({ email });
+    if (!isUserRegistered) {
+      return res.status(404).json({
+        success: false,
+        message: "User doesn't exist with this email! Please register",
+      });
+    }
+
+    const isPasswordMatch = await bcrypt.compare(
+      password,
+      isUserRegistered.password
+    );
+    if (!isPasswordMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect password! Please try again",
+      });
+    }
+
+    const userData = isUserRegistered.toObject();
+    delete userData.password;
+
+    const token = await jwt.sign(
+      { userId: isUserRegistered._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "10d" }
+    );
+
+    return res
+      .cookie("Token", token, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        maxAge: 10 * 24 * 60 * 60 * 1000,
+      })
+      .json({
+        success: true,
+        message: `Welcome back ${isUserRegistered.username} in our platform`,
+        user: userData,
+      });
+  } catch (error) {
+    console.log(`Login error: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      message: "Login failed! Please try again",
     });
   }
 };
