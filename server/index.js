@@ -19,15 +19,8 @@ app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 app.use(cors(CorsOptions));
 
-app.use("/instaclone/api/v1/user" , UserAuthRouter);
+app.use("/instaclone/api/v1/user", UserAuthRouter);
 
-app.listen(PORT, (err) => {
-  if (!err) {
-    console.log(`Server is running on port ${PORT}`);
-  } else {
-    console.log(`server error: ${err.message}`);
-  }
-});
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -37,3 +30,11 @@ mongoose
   .catch((err) => {
     console.log(`Database error: ${err.message}`);
   });
+
+app.listen(PORT, (err) => {
+  if (!err) {
+    console.log(`Server is running on port ${PORT}`);
+  } else {
+    console.log(`server error: ${err.message}`);
+  }
+});
