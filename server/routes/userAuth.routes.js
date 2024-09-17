@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getProfile,
+  getSuggestedUsers,
   Login,
   Logout,
   Register,
@@ -16,5 +17,5 @@ UserAuthRouter.post("/login", Login);
 UserAuthRouter.get("/Logout", Logout);
 UserAuthRouter.get("/getprofile/:id", getProfile);
 UserAuthRouter.post("/editProfile", upload.fields([{ name: "profilePic" }]), isAuthenticated, updateProfile);
-
+UserAuthRouter.get("/suggested_user" , isAuthenticated , getSuggestedUsers) 
 export default UserAuthRouter;

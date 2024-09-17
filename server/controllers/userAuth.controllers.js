@@ -174,15 +174,11 @@ export const updateProfile = async (req, res) => {
         message: "User not found",
       });
     }
-
     if (profilePic) {
       const fileUri = getDataUri(profilePic[0]);
-
       cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-
       user.profilePic = cloudResponse.secure_url;
     }
-
     if (username) {
       user.username = username;
     }
@@ -192,7 +188,6 @@ export const updateProfile = async (req, res) => {
     if (gender) {
       user.gender = gender;
     }
-
     await user.save();
     return res.status(200).json({
       success: true,
@@ -203,6 +198,32 @@ export const updateProfile = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Update profile failed! Please try again.",
+    });
+  }
+};
+
+export const getSuggestedUsers = async (req, res) => {
+  try {
+    const suggestedUsers = await User.find({ _id: { $ne: req.id } }) // req.id is come from isAuthenticated middleware
+      .limit(6)
+      .select("-password");
+    if (suggestedUsers.length === 0) {
+      return res.status(200).json({
+        message: "No suggested users found",
+        success: true,
+        suggestedUsers: [],
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Suggested users",
+      suggestedUsers,
+    });
+  } catch (error) {
+    console.log(`Get suggested users error: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to get suggested users! Please try again.",
     });
   }
 };
