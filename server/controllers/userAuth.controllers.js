@@ -227,3 +227,52 @@ export const getSuggestedUsers = async (req, res) => {
     });
   }
 };
+
+export const FollowOrUnfollow = async (req, res) => {
+  try {
+    const Jiban = req.id;
+    const Karuna = req.params.id;
+    if (Jiban === Karuna) {
+      return res.status(401).json({
+        success: false,
+        message: "You can't follow yourself",
+      });
+    }
+    const JibanUserdata = await User.findById(Jiban);
+    const KarunaUserdata = await User.findById(Karuna);
+    if (!KarunaUserdata || !JibanUserdata) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    const isFollowing = JibanUserdata.following.includes(Karuna);
+    if (isFollowing) {
+      await Promise.all([
+        User.updateOne({ _id: Jiban }, { $pull: { following: Karuna } }),
+        User.updateOne({ _id: Karuna }, { $pull: { followers: Jiban } }),
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: `You have unfollowed ${KarunaUserdata.username}`,
+      });
+    } else {
+      await Promise.all([
+        User.updateOne({ _id: Jiban }, { $push: { following: Karuna } }),
+        User.updateOne({ _id: Karuna }, { $push: { followers: Jiban } }),
+      ]);
+
+      return res.status(200).json({
+        success: true,
+        message: `You have followed ${KarunaUserdata.username}`,
+      });
+    }
+  } catch (error) {
+    console.log(`Follow or unfollow error: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      message: "Follow or unfollow failed! Please try again.",
+    });
+  }
+};

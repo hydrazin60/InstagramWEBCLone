@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  FollowOrUnfollow,
   getProfile,
   getSuggestedUsers,
   Login,
@@ -16,6 +17,12 @@ UserAuthRouter.post("/register", Register);
 UserAuthRouter.post("/login", Login);
 UserAuthRouter.get("/Logout", Logout);
 UserAuthRouter.get("/getprofile/:id", getProfile);
-UserAuthRouter.post("/editProfile", upload.fields([{ name: "profilePic" }]), isAuthenticated, updateProfile);
-UserAuthRouter.get("/suggested_user" , isAuthenticated , getSuggestedUsers) 
+UserAuthRouter.post(
+  "/editProfile",
+  upload.fields([{ name: "profilePic" }]),
+  isAuthenticated,
+  updateProfile
+);
+UserAuthRouter.get("/suggested_user", isAuthenticated, getSuggestedUsers);
+UserAuthRouter.get("/FollowOrUnfollow/:id", isAuthenticated, FollowOrUnfollow);
 export default UserAuthRouter;
