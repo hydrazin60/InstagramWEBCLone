@@ -19,16 +19,23 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+
+    // bio: {
+    //   type: String,
+    //   enum: [
+    //     "hello everyone, I am using Instaclone",
+    //     "only chat Instaclone",
+    //     "bg right now",
+    //     "sleeping",
+    //   ],
+    //  default: "hello everyone, I am using Instaclone",
+    // },
+
     bio: {
       type: String,
-      enum: [
-        "hello everyone, I am using Instaclone",
-        "only chat Instaclone",
-        "bg right now",
-        "sleeping",
-      ],
       default: "hello everyone, I am using Instaclone",
     },
+
     gender: {
       type: String,
       enum: ["male", "female", "other"],

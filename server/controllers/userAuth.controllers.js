@@ -163,7 +163,7 @@ export const updateProfile = async (req, res) => {
   try {
     const userId = req.id;
     const { username, bio, gender } = req.body;
-    // const {profilePic} = req.files?.profilePic?.[0];
+    //const {profilePic} = req.files?.profilePic?.[0];
     const { profilePic } = req.files;
     let cloudResponse;
 
