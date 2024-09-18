@@ -4,6 +4,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import UserAuthRouter from "./routes/userAuth.routes.js";
+import postRouter from "./routes/post.routes.js";
+import multer from "multer";
 
 dotenv.config();
 
@@ -20,7 +22,18 @@ app.use(urlencoded({ extended: true }));
 app.use(cors(CorsOptions));
 
 app.use("/instaclone/api/v1/user", UserAuthRouter);
+app.use("/instaclone/api/v1/post", postRouter);
 
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({
+        sucess: false,
+        message: "File size is too large. Maximum size allowed is 2MB.",
+      });
+    }
+  }
+});
 
 mongoose
   .connect(process.env.MONGO_URI)
