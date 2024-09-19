@@ -1,7 +1,9 @@
-import Post from "../models/post.model.js";
-import User from "../models/user.model.js";
 import sharp from "sharp";
 import cloudinary from "cloudinary";
+
+import Post from "../models/post.model.js";
+import User from "../models/user.model.js";
+import Comment from "../models/comment.model.js";
 
 export const createNewPost = async (req, res) => {
   try {
@@ -55,6 +57,59 @@ export const createNewPost = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: `Failed to create post! Please try again. Error: ${error.message}`,
+    });
+  }
+};
+
+// export const getAllPosts = async (req, res) => {
+//   try {
+//     const AllPost = await Post.find()
+//       .sort({ createdAt: -1 })
+//       .populate({ path: "autherId", select: "username profilePic" })
+//       .populate({
+//         path: "comments",
+//         sort: { createdAt: -1 },
+//         populate: { path: "autherId", select: "username  profilePic" },
+//       });
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Posts fetched successfully",
+//       posts: AllPost,
+//     });
+//   } catch (error) {
+//     console.log(`getAllPosts error: ${error.message}`);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to get posts! Please try again.",
+//     });
+//   }
+// };
+
+export const getAllPosts = async (req, res) => {
+  try {
+    const AllPost = await Post.find()
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "autherId",
+        select: "username profilePic",
+      })
+      .populate({
+        path: "comments",
+        options: { sort: { createdAt: -1 } },
+        populate: { path: "autherId", select: "username profilePic" },
+      });
+
+    return res.status(200).json({
+      success: true,
+      message: "Posts fetched successfully",
+      posts: AllPost,
+    });
+  } catch (error) {
+    console.log(`getAllPosts error: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to get posts! Please try again.",
     });
   }
 };

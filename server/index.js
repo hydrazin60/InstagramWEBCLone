@@ -21,6 +21,24 @@ app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 app.use(cors(CorsOptions));
 
+import CommentSchema from "./models/comment.model.js";
+import PostSchema from "./models/post.model.js";
+import UserSchema from "./models/user.model.js";
+ 
+if (!mongoose.models.Comment) {
+  mongoose.model("Comment", CommentSchema);
+}
+if (!mongoose.models.Post) {
+  mongoose.model("Post", PostSchema);
+}
+if (!mongoose.models.User) {
+  mongoose.model("User", UserSchema);
+}
+
+export const Comment = mongoose.model("Comment");
+export const Post = mongoose.model("Post");
+export const User = mongoose.model("User");
+
 app.use("/instaclone/api/v1/user", UserAuthRouter);
 app.use("/instaclone/api/v1/post", postRouter);
 
