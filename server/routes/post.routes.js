@@ -1,10 +1,11 @@
 import express from "express";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
 import {
+  commentOnPost,
   createNewPost,
   getAllPosts,
   getsingleUserPost,
-  LikePost,
+  LikeAndUnLikePost,
 } from "../controllers/post.controller.js";
 import upload from "../middlewares/multer.js";
 
@@ -17,5 +18,6 @@ postRouter.post(
 );
 postRouter.get("/getAllpost", isAuthenticated, getAllPosts);
 postRouter.get("/yourposts", isAuthenticated, getsingleUserPost);
-postRouter.get("/post/like/:id", isAuthenticated, LikePost);
+postRouter.get("/like/:id", isAuthenticated, LikeAndUnLikePost);
+postRouter.post("/comment/:id", isAuthenticated, commentOnPost);
 export default postRouter;

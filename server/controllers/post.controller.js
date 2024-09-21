@@ -2,7 +2,7 @@ import sharp from "sharp";
 import cloudinary from "cloudinary";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
-
+import Comment from "../models/comment.model.js";
 export const createNewPost = async (req, res) => {
   try {
     const { caption } = req.body;
@@ -139,6 +139,51 @@ export const LikeAndUnLikePost = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: `LikePost failed! ${error.message} `,
+    });
+  }
+};
+
+export const commentOnPost = async (req, res) => {
+  try {
+    const Jiban = req.id;
+    const PostId = req.params.id;
+    const { CommentText } = req.body;
+
+    const post = await Post.findById(PostId);
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+    if (!CommentText) {
+      return res.status(404).json({
+        success: false,
+        message: "Text is required",
+      });
+    }
+    const newComment = await Comment.create({
+      CommentText,
+      autherId: Jiban,
+      postId: PostId,
+    });
+    const comment = await Comment.findById(newComment._id).populate({
+      path: "autherId",
+      select: "username profilePic",
+    });
+    post.comments.push(comment._id);
+    await post.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Comment uploaded successfully",
+      comment,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: `Comment write failed! ${error.message}`,
     });
   }
 };
