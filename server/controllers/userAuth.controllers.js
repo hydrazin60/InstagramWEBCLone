@@ -27,15 +27,14 @@ export const Register = async (req, res) => {
       password: isPasswordHas,
     });
     await newUser.save();
+
+    const UsedData = newUser.toObject();
+    delete UsedData.password;
+
     return res.status(200).json({
       success: true,
       message: `Welcome ${newUser.username} in our platform`,
-      user: {
-        _id: newUser._id,
-        username: newUser.username,
-        email: newUser.email,
-        profilePic: newUser.profilePic,
-      },
+      user: UsedData,
     });
   } catch (error) {
     console.log(error.message);

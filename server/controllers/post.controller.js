@@ -83,8 +83,8 @@ export const getAllPosts = async (req, res) => {
 
 export const getsingleUserPost = async (req, res) => {
   try {
-    const autherId = req.id;
-    const posts = await Post.find({ autherId: autherId })
+    const auther = req.id;
+    const posts = await Post.find({ autherId: auther })
       .sort({ createdAt: -1, autherId: -1 })
       .populate({
         path: "autherId",
@@ -105,6 +105,40 @@ export const getsingleUserPost = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: `getSingleUserPost failed! ${error.message} `,
+    });
+  }
+};
+
+export const LikeAndUnLikePost = async (req, res) => {
+  try {
+    const Nisan = req.id;
+    const PostId = req.params.id;
+    const post = await Post.findById(PostId);
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+    const isLikepost = post.likes.includes(Nisan);
+    if (isLikepost) {
+      await Post.updateOne({ _id: PostId }, { $pull: { likes: Nisan } });
+      return res.status(200).json({
+        success: true,
+        message: "Post unliked successfully",
+      });
+    } else {
+      await Post.updateOne({ _id: PostId }, { $push: { likes: Nisan } });
+      return res.status(200).json({
+        success: true,
+        message: "Post liked successfully",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: `LikePost failed! ${error.message} `,
     });
   }
 };
