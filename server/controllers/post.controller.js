@@ -187,3 +187,32 @@ export const commentOnPost = async (req, res) => {
     });
   }
 };
+
+export const getCommentSinglrPost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const comment = await Comment.find({ postId }).populate({
+      path: "autherId",
+      select: "username profilePic",
+    });
+    if (!comment) {
+      return res.status(201).json({
+        success: true,
+        message: "No comments found",
+        comment: comment,
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Comments fetched successfully",
+      comment: comment,
+    });
+  } catch (error) {
+    console.log(`getCommentSinglrPost error: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      message: `Failed to get comments! Please try again.  `,
+      error: ` getCommentSinglrPost error: ${error.message}`,
+    });
+  }
+};

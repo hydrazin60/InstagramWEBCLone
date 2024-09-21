@@ -4,6 +4,7 @@ import {
   commentOnPost,
   createNewPost,
   getAllPosts,
+  getCommentSinglrPost,
   getsingleUserPost,
   LikeAndUnLikePost,
 } from "../controllers/post.controller.js";
@@ -19,5 +20,6 @@ postRouter.post(
 postRouter.get("/getAllpost", isAuthenticated, getAllPosts);
 postRouter.get("/yourposts", isAuthenticated, getsingleUserPost);
 postRouter.get("/like/:id", isAuthenticated, LikeAndUnLikePost);
-postRouter.post("/comment/:id", isAuthenticated, commentOnPost);
+postRouter.post("/writecomment/:id", isAuthenticated, commentOnPost);
+postRouter.get("/showcomment/:id", isAuthenticated, getCommentSinglrPost);
 export default postRouter;
