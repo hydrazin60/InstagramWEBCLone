@@ -175,11 +175,10 @@ export const editPost = async (req, res) => {
       post.caption = caption;
     }
     await post.save();
-
     return res.status(200).json({
       success: true,
       message: "Post updated successfully",
-      post: post,
+      post: postData,
     });
   } catch (error) {
     console.log(`editPost error: ${error.message}`);
@@ -365,6 +364,104 @@ export const editComment = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: `editComment error: ${error.message}`,
+    });
+  }
+};
+
+// export const deleteComment = async (req, res) => {
+//   try {
+//     const commentId = req.params.id;
+//     const autherId = req.id;
+//     const auther = await User.findById(autherId);
+//     const comment = await Comment.findById(commentId);
+//     if (!comment) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Comment not found",
+//       });
+//     }
+//     if (!auther) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "User not found",
+//       });
+//     }
+
+//     if (
+//       autherId !== comment.autherId.toString() &&
+//       autherId !== Post.autherId.toString()
+//     ) {
+//       return res.status(401).json({
+//         success: false,
+//         message: "Unauthorized",
+//       });
+//     } else {
+//       await Comment.findByIdAndDelete(commentId);
+//       return res.status(200).json({
+//         success: true,
+//         message: "Comment deleted successfully",
+//       });
+//     }
+//   } catch (error) {
+//     console.log(`deleteComment error: ${error.message}`);
+//     return res.status(500).json({
+//       success: false,
+//       message: `deleteComment error: ${error.message}`,
+//     });
+//   }
+// };
+
+export const deleteComment = async (req, res) => {
+  try {
+    const commentId = req.params.id;
+    const autherId = req.id;
+
+    const auther = await User.findById(autherId);
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found",
+      });
+    }
+
+    if (!auther) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const post = await Post.findById(comment.postId);
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    if (
+      autherId !== comment.autherId.toString() &&
+      autherId !== post.autherId.toString()
+    ) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized to delete this comment",
+      });
+    }
+    
+    await Comment.findByIdAndDelete(commentId);
+    return res.status(200).json({
+      success: true,
+      message: "Comment deleted successfully",
+    });
+  } catch (error) {
+    console.log(`deleteComment error: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      message: `deleteComment error: ${error.message}`,
     });
   }
 };

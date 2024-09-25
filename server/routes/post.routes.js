@@ -4,6 +4,7 @@ import {
   bookmarkPost,
   commentOnPost,
   createNewPost,
+  deleteComment,
   deletePost,
   editComment,
   editPost,
@@ -32,6 +33,7 @@ postRouter.get("/yourposts", isAuthenticated, getsingleUserPost);
 postRouter.get("/like/:id", isAuthenticated, LikeAndUnLikePost);
 postRouter.post("/writecomment/:id", isAuthenticated, commentOnPost);
 postRouter.put("/edit_comment/:id", isAuthenticated, editComment);
+postRouter.delete("/delete_comment/:id", isAuthenticated, deleteComment);
 postRouter.get("/showcomment/:id", isAuthenticated, getCommentSinglrPost);
 postRouter.delete("/delete_post/:id", isAuthenticated, deletePost);
 postRouter.get("/bookmark/:id", isAuthenticated, bookmarkPost);
