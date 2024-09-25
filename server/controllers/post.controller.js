@@ -3,6 +3,7 @@ import cloudinary from "cloudinary";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import Comment from "../models/comment.model.js";
+import getDataUri from "../utils/datauri.js";
 export const createNewPost = async (req, res) => {
   try {
     const { caption } = req.body;
@@ -49,6 +50,142 @@ export const createNewPost = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: `Failed to create post! Please try again. Error: ${error.message}`,
+    });
+  }
+};
+
+// export const editPost = async (req, res) => {
+//   try {
+//     const postId = req.params.id;
+//     const { caption } = req.body;
+//     const image = req.file;
+//     const autherId = req.id;
+//     const post = await Post.findById(postId);
+//     const auther = await User.findById(autherId);
+//     if (!post) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Post not found",
+//       });
+//     }
+
+//     if (!auther) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "User not found",
+//       });
+//     }
+//     if (post.autherId.toString() !== autherId) {
+//       return {
+//         success: false,
+//         message: "You are not authorized to edit this post",
+//       };
+//     } else {
+//       let cloudResponse;
+//       const optimizedImageBuffer = await sharp(image.buffer)
+//         .resize({ width: 700, height: 700, fit: "inside" })
+//         .toFormat("jpeg", { quality: 90 })
+//         .toBuffer();
+//       const fileUri = `data:image/jpeg;base64,${optimizedImageBuffer.toString(
+//         "base64"
+//       )}`;
+
+//       cloudResponse = await cloudinary.uploader.upload(fileUri);
+
+//       if (!cloudResponse) {
+//         return res.status(500).json({
+//           success: false,
+//           message: "Failed to upload image",
+//         });
+//       }
+//       post.image = cloudResponse.secure_url;
+
+//       if (image) {
+//         const imageUri = getDataUri(image[0]);
+//         cloudResponse = await cloudResponse.uploader.upload(imageUri.content);
+//         post.image = cloudResponse.secure_url;
+//       }
+//       if (caption) {
+//         post.caption = caption;
+//       }
+//     }
+//     await post.save();
+//     return res.status(200).json({
+//       success: true,
+//       message: "Post updated successfully",
+//       post: post,
+//     });
+//   } catch (error) {
+//     console.log(`editPost error: ${error.message}`);
+//     return res.status(500).json({
+//       success: false,
+//       message: `Failed to edit post! Please try again. Error: ${error.message}`,
+//     });
+//   }
+// };
+
+export const editPost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const { caption } = req.body;
+    const image = req.file;
+    const authorId = req.id;
+    const post = await Post.findById(postId);
+    const author = await User.findById(authorId);
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+    if (!author) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    if (post.authorId && post.authorId.toString() !== authorId) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to edit this post",
+      });
+    }
+    if (image) {
+      const optimizedImageBuffer = await sharp(image.buffer)
+        .resize({ width: 700, height: 700, fit: "inside" })
+        .toFormat("jpeg", { quality: 90 })
+        .toBuffer();
+
+      const fileUri = `data:image/jpeg;base64,${optimizedImageBuffer.toString(
+        "base64"
+      )}`;
+
+      const cloudResponse = await cloudinary.uploader.upload(fileUri);
+
+      if (!cloudResponse) {
+        return res.status(500).json({
+          success: false,
+          message: "Failed to upload image",
+        });
+      }
+      post.image = cloudResponse.secure_url;
+    }
+    if (caption) {
+      post.caption = caption;
+    }
+    await post.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Post updated successfully",
+      post: post,
+    });
+  } catch (error) {
+    console.log(`editPost error: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      message: `Failed to edit post! Please try again. Error: ${error.message}`,
     });
   }
 };

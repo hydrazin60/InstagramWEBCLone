@@ -5,6 +5,7 @@ import {
   commentOnPost,
   createNewPost,
   deletePost,
+  editPost,
   getAllPosts,
   getCommentSinglrPost,
   getsingleUserPost,
@@ -18,6 +19,12 @@ postRouter.post(
   upload.single("image"),
   isAuthenticated,
   createNewPost
+);
+postRouter.post(
+  "/editPost/:id",
+  isAuthenticated,
+  upload.single("image"),
+  editPost
 );
 postRouter.get("/getAllpost", isAuthenticated, getAllPosts);
 postRouter.get("/yourposts", isAuthenticated, getsingleUserPost);
