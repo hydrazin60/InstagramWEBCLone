@@ -259,3 +259,53 @@ export const deletePost = async (req, res) => {
     });
   }
 };
+
+export const bookmarkPost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const authorId = req.id; // Assuming you are getting the authorId from some middleware or authentication method
+    const user = await User.findById(authorId);
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.bookmarks.includes(post._id)) {
+      await User.updateOne(
+        { _id: authorId },
+        { $pull: { bookmarks: post._id } }
+      );
+      return res.status(200).json({
+        success: true,
+        message: "Post unbookmarked successfully",
+      });
+    } else {
+      await User.updateOne(
+        { _id: authorId },
+        { $push: { bookmarks: post._id } }
+      );
+      return res.status(200).json({
+        success: true,
+        message: "Post bookmarked successfully",
+      });
+    }
+  } catch (error) {
+    console.log(`bookmarkPost error: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to bookmark post! Please try again.",
+      error: `bookmarkPost error: ${error.message}`,
+    });
+  }
+};

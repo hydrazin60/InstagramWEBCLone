@@ -1,6 +1,7 @@
 import express from "express";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
 import {
+  bookmarkPost,
   commentOnPost,
   createNewPost,
   deletePost,
@@ -24,4 +25,5 @@ postRouter.get("/like/:id", isAuthenticated, LikeAndUnLikePost);
 postRouter.post("/writecomment/:id", isAuthenticated, commentOnPost);
 postRouter.get("/showcomment/:id", isAuthenticated, getCommentSinglrPost);
 postRouter.delete("/delete_post/:id", isAuthenticated, deletePost);
+postRouter.get("/bookmark/:id", isAuthenticated, bookmarkPost);
 export default postRouter;
