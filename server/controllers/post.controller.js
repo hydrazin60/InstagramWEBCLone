@@ -325,6 +325,50 @@ export const commentOnPost = async (req, res) => {
   }
 };
 
+export const editComment = async (req, res) => {
+  try {
+    const commentId = req.params.id;
+    const { CommentText } = req.body;
+    const autherId = req.id;
+    console.log(commentId, CommentText, autherId);
+
+    const comment = await Comment.findById(commentId);
+    const auther = await User.findById(autherId);
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found",
+      });
+    }
+    if (!auther) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    if (autherId !== comment.autherId.toString()) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    } else {
+      comment.CommentText = CommentText;
+      await comment.save();
+      return res.status(200).json({
+        success: true,
+        message: "Comment updated successfully",
+        comment,
+      });
+    }
+  } catch (error) {
+    console.log(`editComment error: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      message: `editComment error: ${error.message}`,
+    });
+  }
+};
+
 export const getCommentSinglrPost = async (req, res) => {
   try {
     const postId = req.params.id;
