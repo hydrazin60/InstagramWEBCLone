@@ -216,3 +216,46 @@ export const getCommentSinglrPost = async (req, res) => {
     });
   }
 };
+
+export const deletePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const authorId = req.id;
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    if (post.autherId.toString() !== authorId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+    await Post.findByIdAndDelete(postId);
+    let user = await User.findById(authorId);
+
+    user.posts = user.posts.filter((id) => {
+      return id.toString() !== postId;
+    });
+    await user.save();
+    await Comment.deleteMany({ postId });
+
+    return res.status(200).json({
+      success: true,
+      message: "Post deleted successfully",
+    });
+  } catch (error) {
+    console.log(`deletePost error: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      message: `Failed to delete post! Please try again.  `,
+      error: ` deletePost error: ${error.message}`,
+    });
+  }
+};

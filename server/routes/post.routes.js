@@ -3,6 +3,7 @@ import isAuthenticated from "../middlewares/isAuthenticated.js";
 import {
   commentOnPost,
   createNewPost,
+  deletePost,
   getAllPosts,
   getCommentSinglrPost,
   getsingleUserPost,
@@ -22,4 +23,5 @@ postRouter.get("/yourposts", isAuthenticated, getsingleUserPost);
 postRouter.get("/like/:id", isAuthenticated, LikeAndUnLikePost);
 postRouter.post("/writecomment/:id", isAuthenticated, commentOnPost);
 postRouter.get("/showcomment/:id", isAuthenticated, getCommentSinglrPost);
+postRouter.delete("/delete_post/:id", isAuthenticated, deletePost);
 export default postRouter;
